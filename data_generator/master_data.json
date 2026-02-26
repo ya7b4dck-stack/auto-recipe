@@ -1,0 +1,29 @@
+[
+  {
+    "slug": "sales-web-scraper",
+    "job_role": "営業担当者",
+    "tool_name": "Python + BeautifulSoup",
+    "ai_assistant": "Cursor / Antigravity",
+    "difficulty": "初級",
+    "estimated_time_min": 5,
+    "simple_title": "取引先リスト作成を全自動化する"
+  },
+  {
+    "slug": "hr-resume-parser",
+    "job_role": "人事・採用担当者",
+    "tool_name": "Python + PyPDF2 + Google Sheets API",
+    "ai_assistant": "Claude Code / OpenClaw",
+    "difficulty": "中級",
+    "estimated_time_min": 15,
+    "simple_title": "大量の履歴書から必要な情報を一瞬で抜き出す"
+  },
+  {
+    "slug": "marketer-report-generator",
+    "job_role": "Webマーケター",
+    "tool_name": "Google Apps Script (GAS)",
+    "ai_assistant": "Gemini / ChatGPT",
+    "difficulty": "初級",
+    "estimated_time_min": 10,
+    "simple_title": "毎日のアクセス報告をSlackへ自動送信する"
+  }
+]
