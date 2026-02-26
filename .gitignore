@@ -1,0 +1,30 @@
+# Secrets (絶対にアップロードしないファイル)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+data_generator/venv/
+sns_posted_log.json
+
+# Node.js / Next.js
+node_modules/
+.next/
+out/
+build/
+.npm/
+
+# OS/Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+data_generator/.env
