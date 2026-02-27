@@ -34,6 +34,9 @@ export const metadata: Metadata = {
     title: 'AutoRecipe - 非エンジニアのためのAI開発レシピ',
     description: 'プログラミング不要。AIエージェントを使って業務ツールをサクッと作れるコピペ専用レシピ集。',
   },
+  other: {
+    'google-adsense-account': 'ca-pub-8520751934374956',
+  },
 };
 
 export default function RootLayout({
