@@ -1,0 +1,65 @@
+name: Full Auto Recipe Pipeline (Idea -> Article -> SNS)
+
+on:
+  schedule:
+    # 毎週月曜日の日本時間 13:00 (UTC 04:00) に自動運転（アイデア出し〜記事生成）
+    - cron: '0 4 * * 1'
+  workflow_dispatch: # 手動実行用
+
+jobs:
+  run-full-pipeline:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        working-directory: ./data_generator
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # 1. 新しいアイデア（職種×ツール）の生成とJSONへの追記
+      - name: Generate New Ideas
+        working-directory: ./data_generator
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python generate_ideas.py
+
+      # 2. JSONから記事本体（Markdown）の生成
+      - name: Generate Article Content
+        working-directory: ./data_generator
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python generate.py
+
+      # 3. SNS素材（X用テキスト・ショート動画台本）の生成
+      - name: Generate SNS Materials
+        working-directory: ./data_generator
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python generate_sns_materials.py
+
+      # 生成されたコンテンツをリポジトリに保存（フロントエンドのビルド・デプロイはVercel側で自動トリガーされる）
+      - name: Commit and push generated content
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data_generator/master_data.json
+          git add data_generator/output/*.md
+          git add data_generator/sns_output/*.json
+          git add frontend/src/content/*.md
+          
+          # 変更があればコミット
+          git diff --quiet && git diff --staged --quiet || (git commit -m "feat: auto generate new recipe contents [skip ci]" && git push)

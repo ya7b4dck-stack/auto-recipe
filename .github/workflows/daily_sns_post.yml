@@ -1,0 +1,46 @@
+name: Daily SNS Auto Post
+
+on:
+  schedule:
+    # 毎日日本時間 12:00 (UTC 03:00) に実行
+    - cron: '0 3 * * *'
+  workflow_dispatch: # 手動実行用
+
+jobs:
+  run-sns-post:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # 変更されたログファイルをコミット/プッシュするために必要
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f data_generator/requirements.txt ]; then pip install -r data_generator/requirements.txt; fi
+
+      # 本番稼働時は以下のようなコマンドで自動投稿スクリプトを実行
+      - name: Run SNS Post Script
+        working-directory: ./data_generator
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: |
+          python post_to_sns.py
+
+      - name: Commit and push updated log
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data_generator/sns_posted_log.json
+          # 変更があればコミット
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update sns_posted_log.json [skip ci]" && git push)
