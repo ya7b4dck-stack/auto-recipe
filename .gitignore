@@ -27,5 +27,3 @@ build/
 Thumbs.db
 .vscode/
 .idea/
-data_generator/.env
-data_generator/.env

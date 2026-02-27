@@ -179,12 +179,17 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
 
                     <div className="p-8 sm:p-12">
                         {/* 前半：概要・準備・プロンプト */}
-                        <div className="mb-16">
+                        <div className="mb-10">
                             <div className="bg-blue-50/50 rounded-2xl p-6 sm:p-8 border border-blue-100/50">
                                 <div className={sharedProseClasses}>
                                     {renderMarkdown(introPart)}
                                 </div>
                             </div>
+                        </div>
+
+                        {/* アフィリエイトバナー（記事中盤での強力なリテンション） */}
+                        <div className="mb-16">
+                            <AffiliateBanner ai_assistant={post.ai_assistant} />
                         </div>
 
                         {/* 中盤：各AIごとの使い方をタブで表示 */}
