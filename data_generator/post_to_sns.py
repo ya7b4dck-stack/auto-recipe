@@ -2,7 +2,7 @@ import os
 import json
 import random
 import datetime
-# import tweepy # 実際の運用時には tweepy をインストールして使用します。
+import tweepy
 
 # 環境変数からX (Twitter) APIのキーを取得
 X_API_KEY = os.environ.get("X_API_KEY")
@@ -37,18 +37,25 @@ def get_unposted_files(posted_log):
 
 def post_to_x(content):
     if not all([X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET]):
-        print("【テストモード】 APIキーが設定されていないため、実際の投稿はスキップします。")
-        print("-------------- 投稿内容 --------------")
-        print(content)
-        print("--------------------------------------")
-        return True
+        print("エラー: XのAPIキーが設定されていません。投稿をスキップします。")
+        return False
     
-    # 実際の運用ではTweepyなどを使用してAPIリクエストを送信します。
-    # 例:
-    # client = tweepy.Client(consumer_key=X_API_KEY, consumer_secret=X_API_SECRET, access_token=X_ACCESS_TOKEN, access_token_secret=X_ACCESS_TOKEN_SECRET)
-    # response = client.create_tweet(text=content)
-    # print(f"Successfully posted to X: {response.data}")
-    return True
+    try:
+        # X API v2 クライアントの初期化
+        client = tweepy.Client(
+            consumer_key=X_API_KEY,
+            consumer_secret=X_API_SECRET,
+            access_token=X_ACCESS_TOKEN,
+            access_token_secret=X_ACCESS_TOKEN_SECRET
+        )
+        
+        # ツイートを投稿
+        response = client.create_tweet(text=content)
+        print(f"✅ Xへ投稿が成功しました！ ID: {response.data['id']}")
+        return True
+    except Exception as e:
+        print(f"❌ Xへの投稿中にエラーが発生しました: {e}")
+        return False
 
 def main():
     print(f"[{datetime.datetime.now()}] SNS自動投稿バッチ開始")
