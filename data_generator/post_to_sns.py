@@ -24,14 +24,14 @@ def load_posted_log():
 
 def save_posted_log(log):
     with open(LOG_FILE, 'w', encoding='utf-8') as f:
-        json.write(f, log)
+        json.dump(log, f, ensure_ascii=False, indent=2)
 
 def get_unposted_files(posted_log):
     if not os.path.exists(SNS_DIR):
         print(f"SNS directory '{SNS_DIR}' not found.")
         return []
 
-    all_files = [f for f in os.listdir(SNS_DIR) if f.endswith('.json')]
+    all_files = [f for f in os.listdir(SNS_DIR) if f.endswith('.md')]
     unposted_files = [f for f in all_files if f not in posted_log]
     return unposted_files
 
@@ -71,10 +71,26 @@ def main():
     file_path = os.path.join(SNS_DIR, target_file)
 
     with open(file_path, 'r', encoding='utf-8') as f:
-        data = json.load(f)
+        content_lines = f.readlines()
 
-    # X投稿用のテキストを取得（1番目のバリエーションを使用）
-    tweet_text = data['x_posts'][0]
+    # X投稿用のテキストを抽出する
+    # "## X（Twitter）用 投稿テキスト" の次の行から "---" または次の "##" までを取得
+    tweet_lines = []
+    capture = False
+    for line in content_lines:
+        if line.strip().startswith("## X（Twitter）用 投稿テキスト"):
+            capture = True
+            continue
+        if capture:
+            if line.strip() == "---" or line.strip().startswith("## "):
+                break
+            tweet_lines.append(line)
+
+    tweet_text = "".join(tweet_lines).strip()
+
+    if not tweet_text:
+        print(f"テキストが取得できませんでした: {target_file}")
+        return
 
     # バッチ処理として投稿
     print(f"Post Candidate: {target_file}")

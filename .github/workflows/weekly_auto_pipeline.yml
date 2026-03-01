@@ -56,10 +56,10 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data_generator/master_data.json
-          git add data_generator/output/*.md
-          git add data_generator/sns_output/*.json
-          git add frontend/src/content/*.md
+          git add data_generator/master_data.json || true
+          git add data_generator/output/*.md || true
+          git add data_generator/sns_output/*.md || true
+          git add frontend/src/content/*.md || true
           
           # 変更があればコミット
           git diff --quiet && git diff --staged --quiet || (git commit -m "feat: auto generate new recipe contents [skip ci]" && git push)
